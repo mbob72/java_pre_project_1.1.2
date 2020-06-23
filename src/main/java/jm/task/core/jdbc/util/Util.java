@@ -5,6 +5,14 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import jm.task.core.jdbc.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
+
 public class Util {
     private static Connection connection = null;
     private static Connection getMysqlConnection() {
@@ -36,5 +44,11 @@ public class Util {
             connection = getMysqlConnection();
         }
         return connection;
+    }
+
+    public static class HybernateHelper {
+
+
+
     }
 }
