@@ -7,14 +7,37 @@ import java.util.List;
 import jm.task.core.jdbc.util.UtilHybernate;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 
 public class UserDaoHibernateImpl implements UserDao {
-    public UserDaoHibernateImpl() {
 
+
+    private final SessionFactory  sessionFactory;
+
+    public UserDaoHibernateImpl() {
+        sessionFactory = UtilHybernate.getSessionFactory();
     }
 
+    interface ExequeteDBAction {
+        void execute(Session _session);
+    }
+
+    private void executor(ExequeteDBAction callback) {
+        Session _session = null;
+        Transaction trx = null;
+
+        try(UtilHybernate.CloseableSession session = new UtilHybernate
+                .CloseableSession(sessionFactory.openSession())) {
+            _session = session.getSession();
+            trx = _session.beginTransaction();
+            callback.execute(_session);
+            trx.commit();
+        } catch (Exception e) {
+            trx.rollback();
+        }
+    }
 
     @Override
     public void createUsersTable() {
@@ -24,24 +47,19 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void dropUsersTable() {
-        try (UtilHybernate.CloseableSession session = new UtilHybernate
-                .CloseableSession(UtilHybernate.getSessionFactory().openSession())) {
-            session.getSession().createQuery("DELETE FROM User").executeUpdate();
-        } catch (Exception e) { }
+        ExequeteDBAction callback = _session -> {
+            _session.createQuery("DELETE FROM User").executeUpdate();;
+        };
+        executor(callback);
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        try (UtilHybernate.CloseableSession session = new UtilHybernate
-                .CloseableSession(UtilHybernate.getSessionFactory().openSession())) {
-            Session _session = session.getSession();
-            Transaction trx = _session.beginTransaction();
+        ExequeteDBAction callback = _session -> {
             User user = new User(name, lastName, age);
             _session.save(user);
-            trx.commit();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        };
+        executor(callback);
     }
 
     @Override
@@ -52,7 +70,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         try (UtilHybernate.CloseableSession session = new UtilHybernate
-                .CloseableSession(UtilHybernate.getSessionFactory().openSession())) {
+                .CloseableSession(sessionFactory.openSession())) {
             Criteria criteria = session.getSession().createCriteria(User.class);
             return (List<User>) criteria
                     .list();
