@@ -41,14 +41,19 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        // because of 'create' strategy
-        dropUsersTable();
+        ExequeteDBAction callback = _session -> {
+            _session
+                .createSQLQuery("create table if not exists User " +
+            "(id bigint auto_increment, name varchar(256), lastName varchar(256), age int, primary key (id))")
+                .executeUpdate();
+        };
+        executor(callback);
     }
 
     @Override
     public void dropUsersTable() {
         ExequeteDBAction callback = _session -> {
-            _session.createQuery("DELETE FROM User").executeUpdate();;
+            _session.createSQLQuery("drop TABLE IF EXISTS User").executeUpdate();;
         };
         executor(callback);
     }
@@ -79,6 +84,9 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void cleanUsersTable() {
-        dropUsersTable();
+        ExequeteDBAction callback = _session -> {
+            _session.createSQLQuery("DELETE FROM User").executeUpdate();;
+        };
+        executor(callback);
     }
 }
