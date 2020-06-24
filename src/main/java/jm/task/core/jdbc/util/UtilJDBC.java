@@ -5,7 +5,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class Util {
+public class UtilJDBC {
     private static Connection connection = null;
     private static Connection getMysqlConnection() {
         try {
