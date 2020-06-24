@@ -7,6 +7,10 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
+
 public class UtilHybernate {
 
     private static SessionFactory sessionFactory;
@@ -23,13 +27,20 @@ public class UtilHybernate {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(User.class);
 
-        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/example");
-        configuration.setProperty("hibernate.connection.username", "root");
-        configuration.setProperty("hibernate.connection.password", "Passat7755");
-        configuration.setProperty("hibernate.show_sql", "true");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "create");
+        Properties properties = GetProps.fetch();
+        String[] props = {
+                "hibernate.dialect",
+                "hibernate.connection.driver_class",
+                "hibernate.connection.url",
+                "hibernate.connection.username",
+                "hibernate.connection.password",
+                "hibernate.show_sql",
+                "hibernate.hbm2ddl.auto"
+        };
+        new ArrayList<>(Arrays.asList(props)).forEach(propName -> {
+            configuration.setProperty(propName, properties.getProperty(propName));
+        });
+
         return configuration;
     }
 
