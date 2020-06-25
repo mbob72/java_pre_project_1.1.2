@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Properties;
 
 public class Util {
     private static Connection connection = null;
@@ -13,15 +16,19 @@ public class Util {
 
             StringBuilder url = new StringBuilder();
 
-            url.
-                    append("jdbc:mysql://").        //db type
-                    append("localhost:").           //host name
-                    append("3306/").                //port
-                    append("preproject?").          //db name
-                    append("user=root&").          //login
-                    append("password=Passat7755&serverTimezone=UTC");       //password
-
-            System.out.println("URL: " + url + "\n");
+            Properties properties = GetProps.fetch();
+            String[] props = {
+                    "db.type",
+                    "db.host",
+                    "db.port",
+                    "db.name",
+                    "db.login",
+                    "db.password",
+                    "bd.timezone",
+            };
+            new ArrayList<>(Arrays.asList(props)).forEach(propName -> {
+                url.append(properties.getProperty(propName));
+            });
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;

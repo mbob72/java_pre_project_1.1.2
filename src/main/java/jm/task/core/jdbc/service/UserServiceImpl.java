@@ -12,33 +12,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
+    private final UserDao dao;
+    public UserServiceImpl() {
+        dao = new UserDaoJDBCImpl();
+    }
     public void createUsersTable() {
-        UserDao userDao = new UserDaoJDBCImpl();
-        userDao.createUsersTable();
+        dao.createUsersTable();
     }
 
     public void dropUsersTable() {
-        UserDao userDao = new UserDaoJDBCImpl();
-        userDao.dropUsersTable();
+        dao.dropUsersTable();
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        UserDao userDao = new UserDaoJDBCImpl();
-        userDao.saveUser(name, lastName, age);
+        dao.saveUser(name, lastName, age);
     }
 
     public void removeUserById(long id) {
-        UserDao userDao = new UserDaoJDBCImpl();
-        userDao.removeUserById(id);
+        dao.removeUserById(id);
     }
 
     public List<User> getAllUsers() {
-        UserDao userDao = new UserDaoJDBCImpl();
-        return  userDao.getAllUsers();
+        return dao.getAllUsers();
     }
 
     public void cleanUsersTable() {
-        UserDao userDao = new UserDaoJDBCImpl();
-        userDao.cleanUsersTable();
+        dao.cleanUsersTable();
     }
 }
