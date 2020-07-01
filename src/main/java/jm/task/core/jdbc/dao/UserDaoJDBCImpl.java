@@ -22,7 +22,11 @@ public class UserDaoJDBCImpl implements UserDao {
             String query = "create table if not exists ussers (id bigint auto_increment, name varchar(256), lastName varchar(256), age int, primary key (id))";
             stmt.executeUpdate(query);
         } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ee) {
 
+            }
         }
     }
 
@@ -31,7 +35,9 @@ public class UserDaoJDBCImpl implements UserDao {
         try(Statement stmt = connection.createStatement()) {
             stmt.executeUpdate("DROP TABLE IF EXISTS ussers");
         } catch (SQLException e) {
-
+            try {
+                connection.rollback();
+            } catch (SQLException ee) { }
         }
 
     }
@@ -45,7 +51,7 @@ public class UserDaoJDBCImpl implements UserDao {
                     + age + "')";
             stmt.executeUpdate(update);
         } catch (SQLException e) {
-
+            try { connection.rollback(); } catch (SQLException ee) {}
         }
     }
 
@@ -53,7 +59,11 @@ public class UserDaoJDBCImpl implements UserDao {
         Connection connection = Util.getConnection();
         try(Statement stmt = connection.createStatement()) {
             stmt.execute("delete from ussers where id ='" + id + "'");
-        } catch (SQLException e) { }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ee) { }
+        }
     }
 
     public List<User> getAllUsers() {
@@ -80,6 +90,10 @@ public class UserDaoJDBCImpl implements UserDao {
         Connection connection = Util.getConnection();
         try(Statement stmt = connection.createStatement()) {
             stmt.execute("delete from ussers");
-        } catch (SQLException e) { }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ee) { }
+        }
     }
 }
